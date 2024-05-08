@@ -1,5 +1,5 @@
 import express from "express";
-import mongoose from "mongoose";
+
 import dotenv from "dotenv";
 import cors from "cors";
 
@@ -17,15 +17,33 @@ const PORT = process.env.PORT || 4000;
 const URI = process.env.MongoDBURI;
 
 // connect to mongoDB
-try {
-    mongoose.connect(URI, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-    });
-    console.log("Connected to mongoDB");
-} catch (error) {
-    console.log("Error: ", error);
+
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const uri = "mongodb+srv://<username>:<password>@react-project.3kp3z2m.mongodb.net/?retryWrites=true&w=majority&appName=React-project";
+
+// Create a MongoClient with a MongoClientOptions object to set the Stable API version
+const client = new MongoClient(uri, {
+  serverApi: {
+    version: ServerApiVersion.v1,
+    strict: true,
+    deprecationErrors: true,
+  }
+});
+
+async function run() {
+  try {
+    // Connect the client to the server	(optional starting in v4.7)
+    await client.connect();
+    // Send a ping to confirm a successful connection
+    await client.db("admin").command({ ping: 1 });
+    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+  } finally {
+    // Ensures that the client will close when you finish/error
+    await client.close();
+  }
 }
+run().catch(console.dir);
+
 
 // defining routes
 app.use("/book", bookRoute);
